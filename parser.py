@@ -7,7 +7,8 @@ with open("paronyms", "r") as f:
 paronyms = []
 
 paronym = {}
-for line in lines:
+for line_number in range(len(lines)):
+    line = lines[line_number]
     try:
         if line == "":
             paronyms.append(paronym)
@@ -25,8 +26,8 @@ for line in lines:
                 meaning, example = description[i], description[i + 1]
                 paronym[word][meaning] = example
     except Exception as e:
-        print(line)
-        print(e, " - Is 'description' broken?")
+        print(line_number, line)
+        print(e)
         exit(1)
 
 
