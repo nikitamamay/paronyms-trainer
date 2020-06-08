@@ -3,19 +3,15 @@ let wordsList = null;
 
 
 const resetWordsList = () => {
-  let random_pairs = [];
+  wordsList = [];
 
   for (let i in paronyms) {
-    random_pairs = random_pairs.concat(
+    wordsList = wordsList.concat(
       Object.keys(paronyms[i]).map(
         (word) => ([i, word])
       )
     );
   }
-
-  random_pairs.sort(() => Math.random() - 0.5);
-
-  wordsList = random_pairs;
 
   uploadToStorage();
 };
@@ -34,7 +30,8 @@ const uploadToStorage = () => {
 
 const nextWord = () => {
   if (wordsList.length > 0) {
-    let [ index, word_right ] = wordsList[0];
+    let paronym_index = Math.floor(wordsList.length * Math.random());
+    let [ index, word_right ] = wordsList[paronym_index];
     let meaning = paronyms[index][word_right];
 
     meaningBox.innerHTML = Object.keys(meaning).join("<br>");
@@ -42,11 +39,10 @@ const nextWord = () => {
 
     for (let word of Object.keys(paronyms[index])) {
       let onclick = () => {
-        let last = wordsList.shift();
         if (word == word_right) {
           console.log("right!");
         } else {
-          wordsList.push(last);
+          wordsList.slice(paronym_index, 1);
           console.log("wrong!")
         }
         uploadToStorage();
