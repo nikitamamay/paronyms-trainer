@@ -27,7 +27,6 @@ const uploadToStorage = () => {
 };
 
 
-
 const nextWord = () => {
   if (wordsList.length > 0) {
     let paronym_index = Math.floor(wordsList.length * Math.random());
@@ -37,15 +36,15 @@ const nextWord = () => {
     meaningBox.innerHTML = Object.keys(meaning).join("<br>");
     answersList.innerHTML = "";
 
-    for (let word of Object.keys(paronyms[index])) {
+    for (let word in paronyms[index]) {
       let onclick = () => {
         if (word == word_right) {
-          console.log("right!");
+          showModal(word_right, paronyms[index], true);
+          wordsList.splice(paronym_index, 1);
+          uploadToStorage();
         } else {
-          wordsList.slice(paronym_index, 1);
-          console.log("wrong!")
+          showModal(word_right, paronyms[index], false);
         }
-        uploadToStorage();
         nextWord();
       };
 
@@ -63,10 +62,35 @@ const nextWord = () => {
 };
 
 
+const showModal = (word_right, paronym, is_right) => {
+  modalBG.style.display = "flex";
+
+  modalHeading.style.color = is_right ? "green" : "red";
+  modalHeading.innerHTML = is_right ? "Верно!" : "Неправильно!";
+
+  modalWords.innerHTML = "";
+  for (let word in paronym) {
+    modalWords.innerHTML += `<dt${(word == word_right) ? " class='right'" : ""}>${word}</dt>`;
+    modalWords.innerHTML += "<dd>" + Object.keys(paronym[word]).map(meaning => `${meaning} <i>${paronym[word][meaning]}</i>`).join("<br>") + "</dd>";
+  }
+};
+
+
 // ---
 
 let meaningBox = document.getElementById("meaning");
 let answersList = document.getElementById("answers_list");
+
+let modalBG = document.getElementById("modal-bg");
+let modalHeading = document.getElementById("modal-heading");
+let modalWords = document.getElementById("modal-words");
+
+
+document.addEventListener("click", (event) => {
+  if (event.target == modalBG) {
+    modalBG.style.display = "none";
+  }
+});
 
 
 if (localStorage.getItem("paronyms") === null) {
